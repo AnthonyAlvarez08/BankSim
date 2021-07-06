@@ -9,7 +9,7 @@ class Types:
 '''
 super class for a regular account
 '''
-class BankAccount:
+class _BankAccount:
 
     def __init__(self, owner : str, interest : float):
         self._owner = owner
@@ -52,8 +52,14 @@ class BankAccount:
     def __repr__(self):
         return self.statement()
 
+    @classmethod
+    def transaction(cls, amount : float, receiver, sender):
+        sender.withdrawal(amount, Types.checking)
+        receiver.deposit(amount, Types.checking)
 
-class PersonalAccount(BankAccount):
+
+
+class PersonalAccount(_BankAccount):
 
     def __init__(self, owner : str, interest : float):
         super().__init__(owner, interest)
@@ -61,7 +67,7 @@ class PersonalAccount(BankAccount):
         self._accounts[Types.reserve] = 0.0
 
 
-class BusinessAccount(BankAccount):
+class BusinessAccount(_BankAccount):
 
     def __init__(self, owner : str, business : str, interest : float):
         super().__init__(owner, interest)
@@ -76,4 +82,15 @@ class BusinessAccount(BankAccount):
 
 
 class StudentAccount(PersonalAccount):
-    pass
+    
+    def __init__(self, owner : str, parent : PersonalAccount, institution : str, interest : float):
+        super().__init__(owner, interest)
+        self._parent = parent
+        self._institution = institution
+
+    # override superclass statement
+    def statement(self):
+        print(f'Bank statement for {self._owner}, who attends {self._institution}, and dependant of {self._parent._owner}')
+        for i in self._accounts.keys():
+            print(f'{i}: ${round(self._accounts[i], 2)}')
+        print()
