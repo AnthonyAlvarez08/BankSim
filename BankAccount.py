@@ -83,10 +83,20 @@ class BusinessAccount(_BankAccount):
 
 class StudentAccount(PersonalAccount):
     
-    def __init__(self, owner : str, parent : PersonalAccount, institution : str, interest : float):
+    def __init__(self, owner : str, parent : PersonalAccount, institution : str, spend_limit : float, interest : float):
         super().__init__(owner, interest)
         self._parent = parent
         self._institution = institution
+        self._spend_limit = spend_limit
+
+    def withdrawal(self, amount : float, account : Types):
+        # handle not using a proper account
+        if not account in self._accounts.keys():
+            raise ValueError(Types)
+        # raise a warning about withdrawing too much
+        if amount > self._accounts[account] or amount > self._spend_limit:
+            raise Exception('spend limit surpassed or withdrawal is more than is in the account, transaction declined')
+        self._accounts[account] -= amount
 
     # override superclass statement
     def statement(self):
